@@ -38,19 +38,20 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private DictationService witDictation;
     public DictationActivation dictationActivation;
     public AppDictationExperience appDictationExperience;
-    public BuddyController buddyController;
+    public buddyController buddyController;
     public AudioSource audioSource;
     string authToken = "";
-    public TMP_Text text;
+    public RequestTranscription multiRequestTranscription;
+
     List<string> messages = new List<string>()
         {
             "{\"role\": \"system\", \"content\": \"You are a helpful assistant.\"}",
         };
 
-    private void Awake()
+    public void Awake()
     {
         if (!witDictation) witDictation = FindObjectOfType<DictationService>();
-
+        authToken = System.Environment.GetEnvironmentVariable("OPEN_AI_API_KEY") ?? "";
         witDictation.DictationEvents.OnFullTranscription.AddListener(GotFullTranscript);
         witDictation.DictationEvents.OnPartialTranscription.AddListener(GotPartialTranscript);
     }
@@ -61,7 +62,7 @@ public class PlayerController : MonoBehaviour
         StartCoroutine(ChatCompletionRequest(transcript));
     }
 
-    void Update()
+    public void Update()
     {
 
         if (buddyController)
@@ -73,11 +74,9 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-
     IEnumerator ChatCompletionRequest(string transcript)
     {
         var completionsEndpoint = "https://api.openai.com/v1/chat/completions";
-
         messages.Add(",{\"role\": \"user\", \"content\": \"" + transcript + "\"}");
         var json = new StringBuilder();
         json.AppendLine("{");
@@ -99,18 +98,24 @@ public class PlayerController : MonoBehaviour
 
             if (www.result != UnityWebRequest.Result.Success)
             {
-                text.text += "\n" + "Chat Error: " + www.error;
+                multiRequestTranscription._text.Append("Chat Error: " + www.error);
+                multiRequestTranscription.OnTranscriptionUpdated();
+
                 Debug.LogError(www.error);
             }
             else
             {
                 var stringResponse = www.downloadHandler.text;
                 var response = Newtonsoft.Json.JsonConvert.DeserializeObject<OpenAIResponse>(stringResponse);
-                Debug.Log(response.created);
-                Debug.Log(response.choices[0].message.content);
-                text.text += "\n" + "Response: " + response.choices[0].message.content;
-                StartCoroutine(TtsRequest(response.choices[0].message.content));
-                messages.Add(",{\"role\": \"user\", \"content\": \"" + response.choices[0].message.content + "\"}");
+                var responseText = response.choices[0].message.content;
+                Debug.Log(responseText);
+                multiRequestTranscription._text.AppendLine();
+                multiRequestTranscription._text.AppendLine();
+                multiRequestTranscription._text.Append("Buddy:" + responseText);
+                multiRequestTranscription.OnTranscriptionUpdated();
+
+                StartCoroutine(TtsRequest(responseText));
+                messages.Add(",{\"role\": \"user\", \"content\": \"" + responseText + "\"}");
             }
         }
     }
@@ -135,7 +140,8 @@ public class PlayerController : MonoBehaviour
 
             if (www.result != UnityWebRequest.Result.Success)
             {
-                text.text += "\n" + "TTS Error: " + www.error;
+                multiRequestTranscription._text.Append("TTS Error: " + www.error);
+                multiRequestTranscription.OnTranscriptionUpdated();
                 Debug.LogError(www.error);
             }
             else
@@ -148,9 +154,7 @@ public class PlayerController : MonoBehaviour
                 if (buddyController == null)
                 {
                     buddyController = FindObjectOfType<buddyController>();
-
                 }
-
                 buddyController.StartTalking();
 
             }
@@ -160,15 +164,15 @@ public class PlayerController : MonoBehaviour
     {
         int sampleRate = System.BitConverter.ToInt32(wavFileBytes, 24);
         int channels = System.BitConverter.ToInt16(wavFileBytes, 22);
-        int dataStartIndex = 44; // WAV header is typically 44 bytes
+        int dataStartIndex = 44;
 
-        int sampleCount = (wavFileBytes.Length - dataStartIndex) / 2; // 2 bytes per sample for 16-bit audio
+        int sampleCount = (wavFileBytes.Length - dataStartIndex) / 2;
         float[] audioData = new float[sampleCount];
 
         for (int i = 0; i < sampleCount; i++)
         {
             short sample = System.BitConverter.ToInt16(wavFileBytes, dataStartIndex + i * 2);
-            audioData[i] = sample / 32768.0f; // Convert to float (-1.0 to 1.0)
+            audioData[i] = sample / 32768.0f;
         }
 
         AudioClip audioClip = AudioClip.Create("GeneratedAudioClip", sampleCount, channels, sampleRate, false);
@@ -179,21 +183,17 @@ public class PlayerController : MonoBehaviour
     public void GotPartialTranscript(string transcript)
     {
         Debug.Log("Partial transcript: " + transcript);
-        // Update the transcript text
     }
 
     public void StartRecording()
     {
         Debug.Log("Start recording");
         dictationActivation.ToggleActivation();
-        // Start recording
     }
 
     public void StopRecording()
     {
         dictationActivation.ToggleActivation();
-
         Debug.Log("Stop recording");
-        // Stop recording
     }
 }

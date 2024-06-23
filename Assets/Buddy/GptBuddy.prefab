@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 5205176958450084932}
   - component: {fileID: 8232612449691867063}
   - component: {fileID: 6127857670824919907}
-  - component: {fileID: 5372885880252248454}
   - component: {fileID: 3068926817124473717}
+  - component: {fileID: 5855144065910942339}
   m_Layer: 0
   m_Name: GptBuddy
   m_TagString: Untagged
@@ -77,25 +77,6 @@ MonoBehaviour:
   _selectSurface: {fileID: 0}
   _movementProvider: {fileID: 0}
   _tiebreakerScore: 0
---- !u!114 &5372885880252248454
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2671365883463221713}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2fdc49db8ac970245a4f5f6c2b3d355b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  mouthOpened: {fileID: 2100000, guid: 794eaa06431ea6b4880e27377709efac, type: 2}
-  mouthSmiling: {fileID: 2100000, guid: 056c87f70f28a3947aa3285ea1c17c54, type: 2}
-  isTalking: 0
-  head: {fileID: 1456094626977765378}
-  talkingDelay: 0.2
-  walkingSpeed: 0.1
-  timer: 0
 --- !u!54 &3068926817124473717
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -123,6 +104,26 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &5855144065910942339
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2671365883463221713}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2fdc49db8ac970245a4f5f6c2b3d355b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mouthOpened: {fileID: 2100000, guid: 794eaa06431ea6b4880e27377709efac, type: 2}
+  mouthSmiling: {fileID: 2100000, guid: 056c87f70f28a3947aa3285ea1c17c54, type: 2}
+  isTalking: 0
+  transcriptionText: {fileID: 0}
+  head: {fileID: 1456094626977765378}
+  talkingDelay: 0.1
+  walkingSpeed: 0.05
+  timer: 0
 --- !u!1 &4520683204774561043
 GameObject:
   m_ObjectHideFlags: 0
