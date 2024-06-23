@@ -47,6 +47,8 @@ public class PlayerController : MonoBehaviour
     public DictationActivation dictationActivation;
     public AppDictationExperience appDictationExperience;
 
+    public buddyController buddyController;
+
     public AudioSource audioSource;
     string authToken = "";
 
@@ -64,12 +66,21 @@ public class PlayerController : MonoBehaviour
         witDictation.DictationEvents.OnFullTranscription.AddListener(GotFullTranscript);
         witDictation.DictationEvents.OnPartialTranscription.AddListener(GotPartialTranscript);
 
+
     }
     public void GotFullTranscript(string transcript)
     {
         Debug.Log("Transcript: " + transcript);
-        // Update the transcript text
         StartCoroutine(ChatCompletionRequest(transcript));
+    }
+
+    void Update()
+    {
+
+        if (!audioSource.isPlaying && buddyController.isTalking)
+        {
+            buddyController.StopTalking();
+        }
     }
 
 
@@ -98,6 +109,7 @@ public class PlayerController : MonoBehaviour
 
             if (www.result != UnityWebRequest.Result.Success)
             {
+                text.text += "\n" + "Chat Error: " + www.error;
                 Debug.LogError(www.error);
             }
             else
@@ -133,6 +145,7 @@ public class PlayerController : MonoBehaviour
 
             if (www.result != UnityWebRequest.Result.Success)
             {
+                text.text += "\n" + "TTS Error: " + www.error;
                 Debug.LogError(www.error);
             }
             else
@@ -141,6 +154,8 @@ public class PlayerController : MonoBehaviour
                 var audioClip = CreateAudioClipFromWav(www.downloadHandler.data);
                 audioSource.clip = audioClip;
                 audioSource.Play();
+
+                buddyController.StartTalking();
             }
         }
     }
