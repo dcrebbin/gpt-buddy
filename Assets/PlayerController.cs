@@ -47,6 +47,9 @@ public class PlayerController : MonoBehaviour
     public DictationActivation dictationActivation;
     public AppDictationExperience appDictationExperience;
 
+    public AudioSource audioSource;
+    string authToken = "";
+
     public TMP_Text text;
 
     List<string> messages = new List<string>()
@@ -86,7 +89,6 @@ public class PlayerController : MonoBehaviour
         json.AppendLine("]");
         json.AppendLine("}");
         Debug.Log(json.ToString());
-        var authToken = "";
 
         using (UnityWebRequest www = UnityWebRequest.Post(completionsEndpoint, json.ToString(), "application/json"))
         {
@@ -105,9 +107,61 @@ public class PlayerController : MonoBehaviour
                 Debug.Log(response.created);
                 Debug.Log(response.choices[0].message.content);
                 text.text += "\n" + "Response: " + response.choices[0].message.content;
+                StartCoroutine(TtsRequest(response.choices[0].message.content));
                 messages.Add(",{\"role\": \"assistant\", \"content\": \"" + response.choices[0].message.content + "\"}");
             }
         }
+    }
+    IEnumerator TtsRequest(string response)
+    {
+        var audioEndpoint = "https://api.openai.com/v1/audio/speech";
+
+        var json = new StringBuilder();
+        json.AppendLine("{");
+        json.AppendLine("\"model\": \"tts-1\",");
+        json.AppendLine("\"input\": \"" + response + "\",");
+        json.AppendLine("\"voice\": \"alloy\",");
+        json.AppendLine("\"response_format\": \"wav\"");
+        json.AppendLine("}");
+        Debug.Log(json.ToString());
+
+        using (UnityWebRequest www = UnityWebRequest.Post(audioEndpoint, json.ToString(), "application/json"))
+        {
+            www.SetRequestHeader("Authorization", "Bearer " + authToken);
+            www.SetRequestHeader("Content-Type", "application/json");
+            yield return www.SendWebRequest();
+
+            if (www.result != UnityWebRequest.Result.Success)
+            {
+                Debug.LogError(www.error);
+            }
+            else
+            {
+                Debug.Log("Audio Success");
+                var audioClip = CreateAudioClipFromWav(www.downloadHandler.data);
+                audioSource.clip = audioClip;
+                audioSource.Play();
+            }
+        }
+    }
+    AudioClip CreateAudioClipFromWav(byte[] wavFileBytes)
+    {
+        int sampleRate = System.BitConverter.ToInt32(wavFileBytes, 24);
+        int channels = System.BitConverter.ToInt16(wavFileBytes, 22);
+        int dataStartIndex = 44; // WAV header is typically 44 bytes
+
+        int sampleCount = (wavFileBytes.Length - dataStartIndex) / 2; // 2 bytes per sample for 16-bit audio
+        float[] audioData = new float[sampleCount];
+
+        for (int i = 0; i < sampleCount; i++)
+        {
+            short sample = System.BitConverter.ToInt16(wavFileBytes, dataStartIndex + i * 2);
+            audioData[i] = sample / 32768.0f; // Convert to float (-1.0 to 1.0)
+        }
+
+        AudioClip audioClip = AudioClip.Create("GeneratedAudioClip", sampleCount, channels, sampleRate, false);
+        audioClip.SetData(audioData, 0);
+        return audioClip;
     }
 
     public void GotPartialTranscript(string transcript)
