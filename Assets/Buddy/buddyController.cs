@@ -4,9 +4,11 @@ using UnityEngine;
 
 public class buddyController : MonoBehaviour
 {
-    public GameObject mouthOpened;
-    public GameObject mouthClosed;
+    public Material mouthOpened;
+    public Material mouthSmiling;
     public bool isTalking = false;
+
+    public SkinnedMeshRenderer head;
     public float talkingDelay = 0.1f;
 
     public IEnumerator talkingCoroutine;
@@ -32,15 +34,13 @@ public class buddyController : MonoBehaviour
 
     public void StopTalking()
     {
-        mouthOpened.SetActive(false);
-        mouthClosed.SetActive(true);
+        head.material = mouthSmiling;
         isTalking = false;
         StopCoroutine(talkingCoroutine);
     }
 
     public void LookAtPlayer()
     {
-        //look at camera
         var cameraRigTransform = _cameraRig.centerEyeAnchor.transform;
         transform.LookAt(2 * transform.position - cameraRigTransform.position);
     }
@@ -49,11 +49,9 @@ public class buddyController : MonoBehaviour
     {
         while (isTalking)
         {
-            mouthOpened.SetActive(true);
-            mouthClosed.SetActive(false);
+            head.material = mouthOpened;
             yield return new WaitForSeconds(talkingDelay);
-            mouthOpened.SetActive(false);
-            mouthClosed.SetActive(true);
+            head.material = mouthSmiling;
             yield return new WaitForSeconds(talkingDelay);
         }
     }
