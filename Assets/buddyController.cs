@@ -4,38 +4,57 @@ using UnityEngine;
 
 public class buddyController : MonoBehaviour
 {
-
     public GameObject mouthOpened;
     public GameObject mouthClosed;
-
     public bool isTalking = false;
+    public float talkingDelay = 0.1f;
 
-    public float talkingDelay = 0.2f;
-    // Start is called before the first frame update
+    public IEnumerator talkingCoroutine;
+
+    public float walkingSpeed = 0.05f;
+
+    public float timer = 0;
+
+    private OVRCameraRig _cameraRig;
+
+    public void Start()
+    {
+        talkingCoroutine = Talking();
+        _cameraRig = FindObjectOfType<OVRCameraRig>();
+    }
 
     public void StartTalking()
     {
+        LookAtPlayer();
         isTalking = true;
-        StartCoroutine(Talking());
+        StartCoroutine(talkingCoroutine);
     }
 
     public void StopTalking()
     {
-        isTalking = false;
         mouthOpened.SetActive(false);
         mouthClosed.SetActive(true);
-        StopCoroutine(Talking());
+        isTalking = false;
+        StopCoroutine(talkingCoroutine);
+    }
+
+    public void LookAtPlayer()
+    {
+        //look at camera
+        var cameraRigTransform = _cameraRig.centerEyeAnchor.transform;
+        transform.LookAt(2 * transform.position - cameraRigTransform.position);
     }
 
     IEnumerator Talking()
     {
-        while (true)
+        while (isTalking)
         {
             mouthOpened.SetActive(true);
             mouthClosed.SetActive(false);
             yield return new WaitForSeconds(talkingDelay);
-            mouthOpened.SetActive(true);
-            mouthClosed.SetActive(false);
+            mouthOpened.SetActive(false);
+            mouthClosed.SetActive(true);
+            yield return new WaitForSeconds(talkingDelay);
         }
     }
 }

@@ -327,9 +327,9 @@ GameObject:
   m_Component:
   - component: {fileID: 5205176958450084932}
   - component: {fileID: 8232612449691867063}
-  - component: {fileID: 7863230663616151144}
   - component: {fileID: 6127857670824919907}
   - component: {fileID: 5372885880252248454}
+  - component: {fileID: 3068926817124473717}
   m_Layer: 0
   m_Name: GptBuddy
   m_TagString: Untagged
@@ -345,8 +345,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2671365883463221713}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.854, z: 0}
-  m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.34083325, y: 0.34083325, z: 0.34083325}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4961292183624036168}
@@ -357,7 +357,7 @@ Transform:
   - {fileID: 2893385561600746691}
   - {fileID: 6789051147573193390}
   m_Father: {fileID: 0}
-  m_RootOrder: 11
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &8232612449691867063
 MonoBehaviour:
@@ -377,27 +377,6 @@ MonoBehaviour:
   installationRoutineCheckpoint:
     _installationRoutineId: 
     _installationVariants: []
---- !u!65 &7863230663616151144
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2671365883463221713}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 0
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &6127857670824919907
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -435,6 +414,35 @@ MonoBehaviour:
   mouthClosed: {fileID: 4047264253323804859}
   isTalking: 0
   talkingDelay: 0.2
+  walkingSpeed: 0.1
+  timer: 0
+--- !u!54 &3068926817124473717
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2671365883463221713}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &4047264253323804859
 GameObject:
   m_ObjectHideFlags: 0
@@ -942,8 +950,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: -0.19, z: 0}
+  m_Size: {x: 1.19, y: 1.66, z: 1}
+  m_Center: {x: 0, y: 0.12, z: 0}
 --- !u!114 &808670002097917492
 MonoBehaviour:
   m_ObjectHideFlags: 0

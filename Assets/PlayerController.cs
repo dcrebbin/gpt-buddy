@@ -65,9 +65,8 @@ public class PlayerController : MonoBehaviour
 
         witDictation.DictationEvents.OnFullTranscription.AddListener(GotFullTranscript);
         witDictation.DictationEvents.OnPartialTranscription.AddListener(GotPartialTranscript);
-
-
     }
+
     public void GotFullTranscript(string transcript)
     {
         Debug.Log("Transcript: " + transcript);
@@ -77,9 +76,12 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
 
-        if (!audioSource.isPlaying && buddyController.isTalking)
+        if (buddyController)
         {
-            buddyController.StopTalking();
+            if (!audioSource.isPlaying && buddyController.isTalking)
+            {
+                buddyController.StopTalking();
+            }
         }
     }
 
@@ -155,7 +157,14 @@ public class PlayerController : MonoBehaviour
                 audioSource.clip = audioClip;
                 audioSource.Play();
 
+                if (buddyController == null)
+                {
+                    buddyController = FindObjectOfType<buddyController>();
+
+                }
+
                 buddyController.StartTalking();
+
             }
         }
     }
