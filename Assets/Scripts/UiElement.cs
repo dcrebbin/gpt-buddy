@@ -1,6 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
-using Meta.XR.MRUtilityKit;
 using UnityEngine;
 
 public class UiElement : MonoBehaviour

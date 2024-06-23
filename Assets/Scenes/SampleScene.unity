@@ -21000,13 +21000,13 @@ MonoBehaviour:
   SpawnAmount: 1
   MaxIterations: 1000
   SpawnLocations: 1
-  Labels: 25
-  CheckOverlaps: 0
+  Labels: 1
+  CheckOverlaps: 1
   OverrideBounds: -1
   LayerMask:
     serializedVersion: 2
     m_Bits: 4294967295
-  SurfaceClearanceDistance: 0.1
+  SurfaceClearanceDistance: 0.01
 --- !u!114 &814970351
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -46283,9 +46283,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Text
-
-'
+  m_text: Transcription
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: c3b18ab9987dfda4ba247a188cbc1f15, type: 2}
   m_sharedMaterial: {fileID: -2081551743650157415, guid: c3b18ab9987dfda4ba247a188cbc1f15, type: 2}

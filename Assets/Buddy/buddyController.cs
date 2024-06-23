@@ -1,28 +1,32 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class buddyController : MonoBehaviour
+public class BuddyController : MonoBehaviour
 {
     public Material mouthOpened;
     public Material mouthSmiling;
     public bool isTalking = false;
-
+    public UiElement transcriptionText;
     public SkinnedMeshRenderer head;
     public float talkingDelay = 0.1f;
-
     public IEnumerator talkingCoroutine;
-
     public float walkingSpeed = 0.05f;
-
     public float timer = 0;
-
     private OVRCameraRig _cameraRig;
-
     public void Start()
     {
         talkingCoroutine = Talking();
         _cameraRig = FindObjectOfType<OVRCameraRig>();
+        transcriptionText = FindObjectOfType<UiElement>();
+        LookAtPlayer();
+        MoveUiElement();
+    }
+
+    private void MoveUiElement()
+    {
+        Transform uiElementTransform = transcriptionText.transform;
+        uiElementTransform.position = new Vector3(transform.position.x, transform.position.y + 0.65f, transform.position.z);
+        uiElementTransform.LookAt(2 * uiElementTransform.position - _cameraRig.centerEyeAnchor.transform.position);
     }
 
     public void StartTalking()
@@ -42,7 +46,7 @@ public class buddyController : MonoBehaviour
     public void LookAtPlayer()
     {
         var cameraRigTransform = _cameraRig.centerEyeAnchor.transform;
-        transform.LookAt(2 * transform.position - cameraRigTransform.position);
+        transform.LookAt(cameraRigTransform.position);
     }
 
     IEnumerator Talking()

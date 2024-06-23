@@ -1,18 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
 using Oculus.Voice.Dictation;
-using Meta.WitAi.Events.UnityEventListeners;
 using Meta.Voice.Samples.Dictation;
-using Meta.WitAi.Events;
 using Meta.WitAi.Dictation;
 using TMPro;
 using UnityEngine.Networking;
-using Oculus.Platform;
 using System.Text;
-using System.Linq;
-using Newtonsoft.Json.Linq;
 
 class OpenAIResponse
 {
@@ -41,19 +35,13 @@ class Message2
 
 public class PlayerController : MonoBehaviour
 {
-    // Start is called before the first frame update
     [SerializeField] private DictationService witDictation;
-
     public DictationActivation dictationActivation;
     public AppDictationExperience appDictationExperience;
-
-    public buddyController buddyController;
-
+    public BuddyController buddyController;
     public AudioSource audioSource;
     string authToken = "";
-
     public TMP_Text text;
-
     List<string> messages = new List<string>()
         {
             "{\"role\": \"system\", \"content\": \"You are a helpful assistant.\"}",
@@ -122,7 +110,7 @@ public class PlayerController : MonoBehaviour
                 Debug.Log(response.choices[0].message.content);
                 text.text += "\n" + "Response: " + response.choices[0].message.content;
                 StartCoroutine(TtsRequest(response.choices[0].message.content));
-                messages.Add(",{\"role\": \"assistant\", \"content\": \"" + response.choices[0].message.content + "\"}");
+                messages.Add(",{\"role\": \"user\", \"content\": \"" + response.choices[0].message.content + "\"}");
             }
         }
     }
