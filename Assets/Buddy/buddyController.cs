@@ -8,6 +8,7 @@ public class buddyController : MonoBehaviour
     public bool isTalking = false;
     public UiElement transcriptionText;
     public SkinnedMeshRenderer head;
+    public GameObject headAnchor;
     public float talkingDelay = 0.1f;
     public IEnumerator talkingCoroutine;
     public float walkingSpeed = 0.05f;
@@ -18,8 +19,6 @@ public class buddyController : MonoBehaviour
         talkingCoroutine = Talking();
         _cameraRig = FindObjectOfType<OVRCameraRig>();
         transcriptionText = FindObjectOfType<UiElement>();
-        LookAtPlayer();
-        MoveUiElement();
     }
 
     private void MoveUiElement()
@@ -46,7 +45,19 @@ public class buddyController : MonoBehaviour
     public void LookAtPlayer()
     {
         var cameraRigTransform = _cameraRig.centerEyeAnchor.transform;
-        transform.LookAt(cameraRigTransform.position);
+        var cameraToHead = cameraRigTransform.position - headAnchor.transform.position;
+        var angle = Vector3.Angle(cameraToHead, Vector3.up);
+
+        if (angle > 30)
+        {
+            transform.LookAt(cameraRigTransform.position);
+            headAnchor.transform.LookAt(cameraRigTransform.position);
+        }
+        else
+        {
+            var lookPosition = new Vector3(cameraRigTransform.position.x, cameraRigTransform.position.y + 30f, cameraRigTransform.position.z);
+            headAnchor.transform.LookAt(lookPosition);
+        }
     }
 
     IEnumerator Talking()

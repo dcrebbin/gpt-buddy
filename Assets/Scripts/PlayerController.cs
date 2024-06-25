@@ -4,7 +4,6 @@ using UnityEngine;
 using Oculus.Voice.Dictation;
 using Meta.Voice.Samples.Dictation;
 using Meta.WitAi.Dictation;
-using TMPro;
 using UnityEngine.Networking;
 using System.Text;
 
@@ -21,13 +20,13 @@ class OpenAIResponse
 
 class Choice
 {
-    public Message2 message { get; set; }
+    public ChoiceMessage message { get; set; }
     public string index { get; set; }
     public string logprobs { get; set; }
     public string finish_reason { get; set; }
 }
 
-class Message2
+class ChoiceMessage
 {
     public string role { get; set; }
     public string content { get; set; }
@@ -40,7 +39,9 @@ public class PlayerController : MonoBehaviour
     public AppDictationExperience appDictationExperience;
     public buddyController buddyController;
     public AudioSource audioSource;
-    string authToken = "";
+
+    // OpenAI API Key - set via the Unity Editor
+    public string authToken = "";
     public RequestTranscription multiRequestTranscription;
 
     List<string> messages = new List<string>()
@@ -51,7 +52,6 @@ public class PlayerController : MonoBehaviour
     public void Awake()
     {
         if (!witDictation) witDictation = FindObjectOfType<DictationService>();
-        authToken = System.Environment.GetEnvironmentVariable("OPEN_AI_API_KEY") ?? "";
         witDictation.DictationEvents.OnFullTranscription.AddListener(GotFullTranscript);
         witDictation.DictationEvents.OnPartialTranscription.AddListener(GotPartialTranscript);
     }
@@ -73,9 +73,12 @@ public class PlayerController : MonoBehaviour
             }
         }
     }
-
     IEnumerator ChatCompletionRequest(string transcript)
     {
+        if (multiRequestTranscription == null)
+        {
+            multiRequestTranscription = FindObjectOfType<RequestTranscription>();
+        }
         var completionsEndpoint = "https://api.openai.com/v1/chat/completions";
         messages.Add(",{\"role\": \"user\", \"content\": \"" + transcript + "\"}");
         var json = new StringBuilder();

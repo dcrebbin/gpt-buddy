@@ -12845,6 +12845,7 @@ MonoBehaviour:
   appDictationExperience: {fileID: 785907992}
   buddyController: {fileID: 0}
   audioSource: {fileID: 311134602}
+  authToken: 
   multiRequestTranscription: {fileID: 0}
 --- !u!1 &705507993
 GameObject:
@@ -15064,14 +15065,14 @@ MonoBehaviour:
   SpawnObject: {fileID: 9221055849723217890, guid: 127e3052d0c09ac45b4ad615e014e5c7, type: 3}
   SpawnAmount: 1
   MaxIterations: 1000
-  SpawnLocations: 1
+  SpawnLocations: 0
   Labels: 1
-  CheckOverlaps: 1
+  CheckOverlaps: 0
   OverrideBounds: -1
   LayerMask:
     serializedVersion: 2
     m_Bits: 4294967295
-  SurfaceClearanceDistance: 0.01
+  SurfaceClearanceDistance: 0.1
 --- !u!114 &814970351
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15098,7 +15099,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 814970349}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 1.05, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
