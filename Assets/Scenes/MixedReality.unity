@@ -15279,6 +15279,7 @@ MonoBehaviour:
   LayerMask:
     serializedVersion: 2
     m_Bits: 4294967295
+  SpawnPositionOffset: {x: 0, y: 1000, z: 0}
   SurfaceClearanceDistance: 3
 --- !u!1 &822109031
 GameObject:

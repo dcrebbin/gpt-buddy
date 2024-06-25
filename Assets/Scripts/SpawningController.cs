@@ -61,6 +61,9 @@ public class SpawningController : MonoBehaviour
     [SerializeField, Tooltip("Set the layer(s) for the physics bounding box checks, collisions will be avoided with these layers.")]
     public LayerMask LayerMask = -1;
 
+    [SerializeField, Tooltip("The clearance distance required in front of the surface in order for it to be considered a valid spawn position.")]
+    public Vector3 SpawnPositionOffset = Vector3.zero;
+
     [SerializeField, Tooltip("The clearance distance required in front of the surface in order for it to be considered a valid spawn position")]
     public float SurfaceClearanceDistance = 0.1f;
 
@@ -144,7 +147,7 @@ public class SpawningController : MonoBehaviour
                 }
                 if (room.GenerateRandomPositionOnSurface(surfaceType, minRadius, LabelFilter.FromEnum(Labels), out var pos, out var normal))
                 {
-                    spawnPosition = pos + normal * baseOffset;
+                    spawnPosition = pos + normal * baseOffset + SpawnPositionOffset;
                     spawnNormal = normal;
                     var center = spawnPosition + normal * centerOffset;
                     // In some cases, surfaces may protrude through walls and end up outside the room
