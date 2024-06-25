@@ -13,7 +13,10 @@ public class buddyController : MonoBehaviour
     public IEnumerator talkingCoroutine;
     public float walkingSpeed = 0.05f;
     public float timer = 0;
+
     private OVRCameraRig _cameraRig;
+
+    public Vector3 offset = new Vector3(0, -1, 0);
     public void Start()
     {
         talkingCoroutine = Talking();
@@ -21,11 +24,13 @@ public class buddyController : MonoBehaviour
         transcriptionText = FindObjectOfType<UiElement>();
     }
 
-    private void MoveUiElement()
+    public void Update()
     {
-        Transform uiElementTransform = transcriptionText.transform;
-        uiElementTransform.position = new Vector3(transform.position.x, transform.position.y + 0.65f, transform.position.z);
-        uiElementTransform.LookAt(2 * uiElementTransform.position - _cameraRig.centerEyeAnchor.transform.position);
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            LookAtPlayer();
+        }
     }
 
     public void StartTalking()
@@ -45,19 +50,11 @@ public class buddyController : MonoBehaviour
     public void LookAtPlayer()
     {
         var cameraRigTransform = _cameraRig.centerEyeAnchor.transform;
-        var cameraToHead = cameraRigTransform.position - headAnchor.transform.position;
-        var angle = Vector3.Angle(cameraToHead, Vector3.up);
-
-        if (angle > 30)
-        {
-            transform.LookAt(cameraRigTransform.position);
-            headAnchor.transform.LookAt(cameraRigTransform.position);
-        }
-        else
-        {
-            var lookPosition = new Vector3(cameraRigTransform.position.x, cameraRigTransform.position.y + 30f, cameraRigTransform.position.z);
-            headAnchor.transform.LookAt(lookPosition);
-        }
+        var offsetCamera = new Vector3(cameraRigTransform.position.x + offset.x, cameraRigTransform.position.y + offset.y, cameraRigTransform.position.z + offset.z);
+        Vector3 prevTransform = transform.eulerAngles;
+        transform.LookAt(offsetCamera);
+        transform.eulerAngles = new Vector3(prevTransform.x, transform.eulerAngles.y, prevTransform.z);
+        headAnchor.transform.LookAt(offsetCamera);
     }
 
     IEnumerator Talking()
