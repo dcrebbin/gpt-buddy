@@ -46,7 +46,7 @@ public class PlayerController : MonoBehaviour
 
     List<string> messages = new List<string>()
         {
-            "{\"role\": \"system\", \"content\": \"You are a helpful assistant.\"}",
+            "{\"role\": \"system\", \"content\": \"You're a helpful & cheery assistant called 'Buddy'. You respond in a friendly and engaging tone. e.g: user: Hey how's it going. assistant: Great thank you, how are you :).  .\"}",
         };
 
     public void Awake()
@@ -83,7 +83,7 @@ public class PlayerController : MonoBehaviour
         messages.Add(",{\"role\": \"user\", \"content\": \"" + transcript + "\"}");
         var json = new StringBuilder();
         json.AppendLine("{");
-        json.AppendLine("\"model\": \"gpt-3.5-turbo-16k\",");
+        json.AppendLine("\"model\": \"gpt-4o\",");
         json.AppendLine("\"messages\": [");
         foreach (var message in messages)
         {
