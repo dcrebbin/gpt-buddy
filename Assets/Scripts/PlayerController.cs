@@ -6,6 +6,7 @@ using Meta.Voice.Samples.Dictation;
 using Meta.WitAi.Dictation;
 using UnityEngine.Networking;
 using System.Text;
+using OpenAI;
 
 public class PlayerController : MonoBehaviour
 {
@@ -19,10 +20,12 @@ public class PlayerController : MonoBehaviour
     public string authToken = "";
     public RequestTranscription multiRequestTranscription;
 
-    List<string> messages = new List<string>()
-        {
-            "{\"role\": \"system\", \"content\": \"You're a helpful & cheery assistant called 'Buddy'. You respond in a friendly and engaging tone. e.g: user: Hey how's it going. assistant: Great thank you, how are you :).  .\"}",
-        };
+    List<ChoiceMessage> messages = new List<ChoiceMessage>(){
+        new(){
+            role = "system",
+            content = "You're a helpful & cheery assistant called 'Buddy'. You respond in a friendly and engaging tone. e.g: user: Hey how's it going. assistant: Great thank you, how are you :)."
+        }
+    };
 
     public void Awake()
     {
@@ -54,24 +57,21 @@ public class PlayerController : MonoBehaviour
         {
             multiRequestTranscription = FindObjectOfType<RequestTranscription>();
         }
-        var completionsEndpoint = "https://api.openai.com/v1/chat/completions";
-        messages.Add(",{\"role\": \"user\", \"content\": \"" + transcript + "\"}");
-        var json = new StringBuilder();
-        json.AppendLine("{");
-        json.AppendLine("\"model\": \"gpt-4o\",");
-        json.AppendLine("\"messages\": [");
-        foreach (var message in messages)
+        messages.Add(new ChoiceMessage()
         {
-            json.AppendLine(message);
-        }
-        json.AppendLine("]");
-        json.AppendLine("}");
-        Debug.Log(json.ToString());
+            role = "user",
+            content = transcript
+        });
+        var request = new OpenAIChatRequest()
+        {
+            model = Constants.GPT_4O_MODEL,
+            messages = messages
+        };
 
-        using (UnityWebRequest www = UnityWebRequest.Post(completionsEndpoint, json.ToString(), "application/json"))
+        using (UnityWebRequest www = UnityWebRequest.Post(Constants.COMPLETIONS_ENDPOINT, request.ToString(), Constants.CONTENT_TYPE))
         {
             www.SetRequestHeader("Authorization", "Bearer " + authToken);
-            www.SetRequestHeader("Content-Type", "application/json");
+            www.SetRequestHeader("Content-Type", Constants.CONTENT_TYPE);
             yield return www.SendWebRequest();
 
             if (www.result != UnityWebRequest.Result.Success)
@@ -93,27 +93,23 @@ public class PlayerController : MonoBehaviour
                 multiRequestTranscription.OnTranscriptionUpdated();
 
                 StartCoroutine(TtsRequest(responseText));
-                messages.Add(",{\"role\": \"user\", \"content\": \"" + responseText + "\"}");
+                messages.Add(new ChoiceMessage()
+                {
+                    role = "user",
+                    content = responseText
+                });
             }
         }
     }
     IEnumerator TtsRequest(string response)
     {
-        var audioEndpoint = "https://api.openai.com/v1/audio/speech";
+        var audioEndpoint = Constants.TEXT_TO_SPEECH_ENDPOINT;
+        var request = new OpenAITextToSpeechRequest(Constants.TTS_1_MODEL, response, Constants.ALLOY_VOICE, Constants.WAV_RESPONSE_FORMAT);
 
-        var json = new StringBuilder();
-        json.AppendLine("{");
-        json.AppendLine("\"model\": \"tts-1\",");
-        json.AppendLine("\"input\": \"" + response + "\",");
-        json.AppendLine("\"voice\": \"alloy\",");
-        json.AppendLine("\"response_format\": \"wav\"");
-        json.AppendLine("}");
-        Debug.Log(json.ToString());
-
-        using (UnityWebRequest www = UnityWebRequest.Post(audioEndpoint, json.ToString(), "application/json"))
+        using (UnityWebRequest www = UnityWebRequest.Post(audioEndpoint, request.ToString(), Constants.CONTENT_TYPE))
         {
             www.SetRequestHeader("Authorization", "Bearer " + authToken);
-            www.SetRequestHeader("Content-Type", "application/json");
+            www.SetRequestHeader("Content-Type", Constants.CONTENT_TYPE);
             yield return www.SendWebRequest();
 
             if (www.result != UnityWebRequest.Result.Success)

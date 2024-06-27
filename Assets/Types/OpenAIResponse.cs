@@ -62,5 +62,9 @@ namespace OpenAI
             this.role = role;
             this.content = content;
         }
+
+        public ChoiceMessage()
+        {
+        }
     }
 }
