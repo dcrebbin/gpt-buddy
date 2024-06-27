@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class buddyController : MonoBehaviour
+public class BuddyController : MonoBehaviour
 {
     public Material mouthOpened;
     public Material mouthSmiling;

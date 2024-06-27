@@ -1,26 +1,22 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Oculus.Voice.Dictation;
 using Meta.Voice.Samples.Dictation;
 using Meta.WitAi.Dictation;
 using UnityEngine.Networking;
-using System.Text;
 using OpenAI;
+using System;
 
 public class PlayerController : MonoBehaviour
 {
-    [SerializeField] private DictationService witDictation;
-    public DictationActivation dictationActivation;
-    public AppDictationExperience appDictationExperience;
-    public buddyController buddyController;
-    public AudioSource audioSource;
+    private DictationService witDictation;
+    private DictationActivation dictationActivation;
+    private BuddyController buddyController;
+    private AudioSource audioSource;
+    private readonly string openAiApiKey = Environment.GetEnvironmentVariable("OPEN_AI_API_KEY") ?? "";
+    private RequestTranscription multiRequestTranscription;
 
-    // OpenAI API Key - set via the Unity Editor
-    public string authToken = "";
-    public RequestTranscription multiRequestTranscription;
-
-    List<ChoiceMessage> messages = new List<ChoiceMessage>(){
+    readonly List<ChoiceMessage> messages = new List<ChoiceMessage>(){
         new(){
             role = "system",
             content = "You're a helpful & cheery assistant called 'Buddy'. You respond in a friendly and engaging tone. e.g: user: Hey how's it going. assistant: Great thank you, how are you :)."
@@ -29,9 +25,21 @@ public class PlayerController : MonoBehaviour
 
     public void Awake()
     {
-        if (!witDictation) witDictation = FindObjectOfType<DictationService>();
+        AssignVariables();
+        SetWitDictationListeners();
+    }
+
+    private void SetWitDictationListeners()
+    {
         witDictation.DictationEvents.OnFullTranscription.AddListener(GotFullTranscript);
         witDictation.DictationEvents.OnPartialTranscription.AddListener(GotPartialTranscript);
+    }
+
+    private void AssignVariables()
+    {
+        dictationActivation = FindObjectOfType<DictationActivation>();
+        audioSource = FindObjectOfType<AudioSource>();
+        if (!witDictation) witDictation = FindObjectOfType<DictationService>();
     }
 
     public void GotFullTranscript(string transcript)
@@ -70,7 +78,7 @@ public class PlayerController : MonoBehaviour
 
         using (UnityWebRequest www = UnityWebRequest.Post(Constants.COMPLETIONS_ENDPOINT, request.ToString(), Constants.CONTENT_TYPE))
         {
-            www.SetRequestHeader("Authorization", "Bearer " + authToken);
+            www.SetRequestHeader("Authorization", "Bearer " + openAiApiKey);
             www.SetRequestHeader("Content-Type", Constants.CONTENT_TYPE);
             yield return www.SendWebRequest();
 
@@ -86,7 +94,6 @@ public class PlayerController : MonoBehaviour
                 var stringResponse = www.downloadHandler.text;
                 var response = Newtonsoft.Json.JsonConvert.DeserializeObject<OpenAI.OpenAIResponse>(stringResponse);
                 var responseText = response.choices[0].message.content;
-                Debug.Log(responseText);
                 multiRequestTranscription._text.AppendLine();
                 multiRequestTranscription._text.AppendLine();
                 multiRequestTranscription._text.Append("Buddy:" + responseText);
@@ -108,7 +115,7 @@ public class PlayerController : MonoBehaviour
 
         using (UnityWebRequest www = UnityWebRequest.Post(audioEndpoint, request.ToString(), Constants.CONTENT_TYPE))
         {
-            www.SetRequestHeader("Authorization", "Bearer " + authToken);
+            www.SetRequestHeader("Authorization", "Bearer " + openAiApiKey);
             www.SetRequestHeader("Content-Type", Constants.CONTENT_TYPE);
             yield return www.SendWebRequest();
 
@@ -127,7 +134,7 @@ public class PlayerController : MonoBehaviour
 
                 if (buddyController == null)
                 {
-                    buddyController = FindObjectOfType<buddyController>();
+                    buddyController = FindObjectOfType<BuddyController>();
                 }
                 buddyController.StartTalking();
 
@@ -159,15 +166,13 @@ public class PlayerController : MonoBehaviour
         Debug.Log("Partial transcript: " + transcript);
     }
 
-    public void StartRecording()
+    public void StartListening()
     {
-        Debug.Log("Start recording");
         dictationActivation.ToggleActivation();
     }
 
-    public void StopRecording()
+    public void StopListening()
     {
         dictationActivation.ToggleActivation();
-        Debug.Log("Stop recording");
     }
 }
