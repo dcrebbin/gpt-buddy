@@ -7,31 +7,6 @@ using Meta.WitAi.Dictation;
 using UnityEngine.Networking;
 using System.Text;
 
-class OpenAIResponse
-{
-    public string id { get; set; }
-
-    public string created { get; set; }
-
-    public string model { get; set; }
-
-    public List<Choice> choices { get; set; }
-}
-
-class Choice
-{
-    public ChoiceMessage message { get; set; }
-    public string index { get; set; }
-    public string logprobs { get; set; }
-    public string finish_reason { get; set; }
-}
-
-class ChoiceMessage
-{
-    public string role { get; set; }
-    public string content { get; set; }
-}
-
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] private DictationService witDictation;
@@ -109,7 +84,7 @@ public class PlayerController : MonoBehaviour
             else
             {
                 var stringResponse = www.downloadHandler.text;
-                var response = Newtonsoft.Json.JsonConvert.DeserializeObject<OpenAIResponse>(stringResponse);
+                var response = Newtonsoft.Json.JsonConvert.DeserializeObject<OpenAI.OpenAIResponse>(stringResponse);
                 var responseText = response.choices[0].message.content;
                 Debug.Log(responseText);
                 multiRequestTranscription._text.AppendLine();
